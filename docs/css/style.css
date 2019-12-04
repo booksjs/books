@@ -1,0 +1,40 @@
+.lapor-book-a4{
+    /* margin: 20px; */
+    width: 840px;
+    height: 594px;
+    position: relative;
+}
+.lapor-page-container-a4{
+    width: 420px;
+    height: 594px;
+    position: absolute;
+    transition: all .5s ease;
+    transform-style: preserve-3d;
+    transform-origin: center left;
+    right: 0;
+}
+.lapor-page-a4{
+    width: 420px;
+    height: 594px;
+    position: relative;
+}
+.lapor-page-a4-turn{
+    transform: rotateY(180deg);
+}
+#profilePictureInput, #homePictureInput{
+  display: none;
+}
+.lapor-page-a4-front, .lapor-page-a4-back{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: white;
+    backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+}
+.lapor-page-a4-back{
+    transform: rotateY(180deg);
+}
+.lapor-page-a4 h1{
+    margin: 10px;
+}
