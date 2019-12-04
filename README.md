@@ -1,3 +1,3 @@
-# PDF Viewer
+# BooksJS
 
-> Custom PDF viewer with pagination built with pdf.js
+> Open source book preview built with pdf.js and jQuery
