@@ -1,4 +1,4 @@
-const url = './docs/pdf.pdf'
+const url = './assets/pdf.pdf'
 let z_index = 1,
   page,
   frontPage,
