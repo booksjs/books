@@ -1,10 +1,10 @@
-.lapor-book-a4{
+.booksjs-preview{
     /* margin: 20px; */
     width: 840px;
     height: 594px;
     position: relative;
 }
-.lapor-page-container-a4{
+.booksjs-page-container{
     width: 420px;
     height: 594px;
     position: absolute;
@@ -13,18 +13,18 @@
     transform-origin: center left;
     right: 0;
 }
-.lapor-page-a4{
+.booksjs-page{
     width: 420px;
     height: 594px;
     position: relative;
 }
-.lapor-page-a4-turn{
+.booksjs-page-turn{
     transform: rotateY(180deg);
 }
 #profilePictureInput, #homePictureInput{
   display: none;
 }
-.lapor-page-a4-front, .lapor-page-a4-back{
+.booksjs-page-front, .booksjs-page-back{
     width: 100%;
     height: 100%;
     position: absolute;
@@ -32,9 +32,9 @@
     backface-visibility: hidden;
     -moz-backface-visibility: hidden;
 }
-.lapor-page-a4-back{
+.booksjs-page-back{
     transform: rotateY(180deg);
 }
-.lapor-page-a4 h1{
+.booksjs-page h1{
     margin: 10px;
 }

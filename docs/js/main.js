@@ -1,6 +1,8 @@
 const url = './assets/pdf.pdf'
 let z_index = 1,
   page,
+  container,
+  bookContainer,
   frontPage,
   frontPageContainer,
   backPage,
@@ -63,12 +65,13 @@ const loadDocument = async _ => {
   // Get Document
   pdfDoc = await pdfjsLib.getDocument(url).promise;
   numPages = pdfDoc.numPages;
+  container = document.getElementsByClassName('booksjs-preview')[0];
   
   for(let i=1; i<=numPages; i++){
     z_index=numPages-i+1;
     pageContainer = document.createElement("div");
     classAttribute = document.createAttribute("class");
-    classAttribute.value = "lapor-page-container-a4";
+    classAttribute.value = "booksjs-page-container";
     styleAttribute = document.createAttribute("style");
     styleAttribute.value = "z-index: "+ z_index +";";
     dataAttribute = document.createAttribute("data-zindex");
@@ -79,13 +82,13 @@ const loadDocument = async _ => {
     
     page = document.createElement("div");
     classAttribute = document.createAttribute("class");
-    classAttribute.value = "lapor-page-a4";
+    classAttribute.value = "booksjs-page";
     page.setAttributeNode(classAttribute);
     
     frontPageContainer = document.createElement("div");
     frontPage = document.createElement("canvas");
     classAttribute = document.createAttribute("class");
-    classAttribute.value = "lapor-page-a4-front";
+    classAttribute.value = "booksjs-page-front";
     dataAttribute = document.createAttribute("data-page");
     dataAttribute.value = i;
     frontPageContainer.setAttributeNode(classAttribute);
@@ -98,7 +101,7 @@ const loadDocument = async _ => {
     backPageContainer = document.createElement("div");
     backPage = document.createElement("canvas");
     classAttribute = document.createAttribute("class");
-    classAttribute.value = "lapor-page-a4-back";
+    classAttribute.value = "booksjs-page-back";
     dataAttribute = document.createAttribute("data-page");
     dataAttribute.value = i;
     backPageContainer.setAttributeNode(classAttribute);
@@ -108,75 +111,97 @@ const loadDocument = async _ => {
       renderPage(pdfDoc, i, backPage);
     }
 
-    backPageContainer.append(backPage);
-    frontPageContainer.append(frontPage);
-    page.append(backPageContainer);
-    page.append(frontPageContainer);
-    pageContainer.append(page);
-    $('.lapor-book-a4').prepend(pageContainer);
+    backPageContainer.appendChild(backPage);
+    frontPageContainer.appendChild(frontPage);
+    page.appendChild(backPageContainer);
+    page.appendChild(frontPageContainer);
+    pageContainer.appendChild(page);
+    if(container.hasChildNodes()) container.insertBefore(pageContainer, container.childNodes[0]);
+    else container.appendChild(pageContainer);
   }
 }
 
 loadDocument();
 
-
 var count = 1;
 function moveBack(element){
-    $(element).css('z-index', element.dataset.zindex);
+    element.style.zIndex=element.dataset.zindex;
     setTimeout(function(){
-        $(element).find(".lapor-page-a4-front").removeAttr('style');
-        $(element).find(".lapor-page-a4-back").removeAttr('style');
+        element.getElementsByClassName("booksjs-page-front")[0].removeAttribute('style');
+        element.getElementsByClassName("booksjs-page-back")[0].removeAttribute('style');
     }, 150);
     setTimeout(function(){
         bindClickEvent()
     }, 800);
 }
+function hasClass(element, selector) {
+  var className = " " + selector + " ";
+  if ((" " + element.className + " ").replace(/[\n\t\r]/g, " ").indexOf(className) > -1) {
+      return true;
+  }
+  return false;
+}
+
+function turnPage(){
+  let x = document.getElementsByClassName("booksjs-page-container");
+  if(hasClass(this, 'booksjs-page-turn')){
+      let highestIndex = 0;
+      let currElement;
+      
+      for(let i=0; i<x.length; i++){
+          if(hasClass(x[i], 'booksjs-page-turn')){
+              var currentIndex = parseInt(x[i].style.zIndex);
+              if(currentIndex > highestIndex) {
+                  highestIndex = currentIndex;
+                  currElement = x[i];
+              }
+          }
+      };
+      currElement.classList.remove('booksjs-page-turn');
+      removeBindClickEvent();
+      moveBack(currElement);
+      count--;
+  }
+  else{
+      let highestIndex = 0;
+      let currElement;
+      
+      for(let i=0; i<x.length; i++){
+        if(!hasClass(x[i], 'booksjs-page-turn')){
+            var currentIndex = parseInt(x[i].style.zIndex);
+            if(currentIndex > highestIndex) {
+                highestIndex = currentIndex;
+                currElement = x[i];
+            }
+        }
+      };
+      currElement.classList.add('booksjs-page-turn');
+      currElement.style.zIndex=count;
+      setTimeout(function(){
+          backfaceChange(currElement);
+      }, 150)
+      removeBindClickEvent();
+      setTimeout(function(){
+          bindClickEvent();
+      }, 800);
+      count++;
+  }
+}
+
+function removeBindClickEvent(){
+  let temp = document.getElementsByClassName('booksjs-page-container');    
+  for(let idx=0; idx<temp.length; idx++){
+    temp[idx].removeEventListener('click', turnPage);
+  }
+}
 function bindClickEvent(){
-    $('.lapor-page-container-a4').bind('click', function(){
-        if($(this).hasClass('lapor-page-a4-turn')){
-            let highestIndex = 0;
-            let currElement;
-            $(".lapor-page-container-a4").each(function() {
-                if($(this).hasClass('lapor-page-a4-turn')){
-                    var currentIndex = parseInt($(this).css("zIndex"), 10);
-                    if(currentIndex > highestIndex) {
-                        highestIndex = currentIndex;
-                        currElement = this;
-                    }
-                }
-            });
-            $(currElement).removeClass('lapor-page-a4-turn');
-            $('.lapor-page-container-a4').unbind();
-            moveBack(currElement);
-            count--;
-        }
-        else{
-            let highestIndex = 0;
-            let currElement;
-            $(".lapor-page-container-a4").each(function() {
-                if(!$(this).hasClass('lapor-page-a4-turn')){
-                    var currentIndex = parseInt($(this).css("zIndex"), 10);
-                    if(currentIndex > highestIndex) {
-                        highestIndex = currentIndex;
-                        currElement = this;
-                    }
-                }
-            });
-            $(currElement).addClass('lapor-page-a4-turn');
-            $(currElement).css('z-index', count);
-            setTimeout(function(){
-                backfaceChange(currElement)
-            }, 150)
-            $('.lapor-page-container-a4').unbind();
-            setTimeout(function(){
-                bindClickEvent()
-            }, 800);
-            count++;
-        }
-    });
+  let temp = document.getElementsByClassName('booksjs-page-container');    
+  for(let idx=0; idx<temp.length; idx++){
+    temp[idx].addEventListener('click', turnPage);
+  }
 }
 function backfaceChange(element){
-    $(element).find(".lapor-page-a4-front").css('backface-visibility', 'visible');
-    $(element).find(".lapor-page-a4-back").css('backface-visibility', 'visible');
-    $(element).find(".lapor-page-a4-back").css('z-index', element.dataset.zindex);
+  element.getElementsByClassName("booksjs-page-front")[0].style.backfaceVisibility='visible';
+  element.getElementsByClassName("booksjs-page-back")[0].style.backfaceVisibility='visible';
+  element.getElementsByClassName("booksjs-page-back")[0].style.zIndex=element.dataset.zindex;
 }
