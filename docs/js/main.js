@@ -1,7 +1,15 @@
+/*!
+ * BooksJS JavaScript Library v0.0.1
+ *
+ * Copyright BooksJS and other contributors
+ * Released under the MIT license
+ *
+ * Date: 2019-12-09T16:19Z
+ */
 const url = './assets/pdf.pdf'
 let z_index = 1,
+  bodyTag,
   page,
-  container,
   bookContainer,
   frontPage,
   frontPageContainer,
@@ -28,8 +36,8 @@ const renderPage = (pdfDoc, num, canvas) => {
   pdfDoc.getPage(num).then(page_ => {
     // Set scale
     const viewport = page_.getViewport({ scale: canvas.parentElement.clientWidth / page_.getViewport({scale:1.0}).width});
-    canvas.height = canvas.parentElement.clientHeight;
     canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.width*1.414;
     ctx = canvas.getContext('2d');
 
     const renderCtx = {
@@ -65,7 +73,17 @@ const loadDocument = async _ => {
   // Get Document
   pdfDoc = await pdfjsLib.getDocument(url).promise;
   numPages = pdfDoc.numPages;
-  container = document.getElementsByClassName('booksjs-preview')[0];
+  bodyTag = document.getElementsByTagName('body')[0];
+
+  modalContainer = document.createElement("div");
+  classAttribute = document.createAttribute("class");
+  classAttribute.value = "booksjs-modal";
+  modalContainer.setAttributeNode(classAttribute);
+  
+  bookContainer = document.createElement("div");
+  classAttribute = document.createAttribute("class");
+  classAttribute.value = "booksjs-preview";
+  bookContainer.setAttributeNode(classAttribute);
   
   for(let i=1; i<=numPages; i++){
     z_index=numPages-i+1;
@@ -100,15 +118,20 @@ const loadDocument = async _ => {
     i++;
     backPageContainer = document.createElement("div");
     backPage = document.createElement("canvas");
-    classAttribute = document.createAttribute("class");
-    classAttribute.value = "booksjs-page-back";
     dataAttribute = document.createAttribute("data-page");
     dataAttribute.value = i;
-    backPageContainer.setAttributeNode(classAttribute);
     backPageContainer.setAttributeNode(dataAttribute);
     if(i <= numPages){
+      classAttribute = document.createAttribute("class");
+      classAttribute.value = "booksjs-page-back";
+      backPageContainer.setAttributeNode(classAttribute);
       // Get Document
       renderPage(pdfDoc, i, backPage);
+    }
+    else{
+      classAttribute = document.createAttribute("class");
+      classAttribute.value = "booksjs-page-back booksjs-page-empty";
+      backPageContainer.setAttributeNode(classAttribute);
     }
 
     backPageContainer.appendChild(backPage);
@@ -116,9 +139,12 @@ const loadDocument = async _ => {
     page.appendChild(backPageContainer);
     page.appendChild(frontPageContainer);
     pageContainer.appendChild(page);
-    if(container.hasChildNodes()) container.insertBefore(pageContainer, container.childNodes[0]);
-    else container.appendChild(pageContainer);
+    if(bookContainer.hasChildNodes()) bookContainer.insertBefore(pageContainer, bookContainer.childNodes[0]);
+    else bookContainer.appendChild(pageContainer);
   }
+
+  modalContainer.appendChild(bookContainer);
+  bodyTag.appendChild(modalContainer);
 }
 
 loadDocument();
