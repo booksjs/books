@@ -61,3 +61,9 @@ html_theme_options = {
 html_js_files = [
     'js/add_header.js'
 ]
+
+html_sidebars = {
+    '**': [
+        'sidebar.html',
+    ]
+}

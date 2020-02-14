@@ -7,3 +7,5 @@ BooksJS Documentation
 ===================================
 
    📖 BooksJS or books.js is an open-source JavaScript library for building interactive book previews on the web. The code is licensed under the MIT License.
+
+   To add BooksJS in your project you can follow the :ref:`installation` instructions, and when you are finished you can :ref:`load-document`.
